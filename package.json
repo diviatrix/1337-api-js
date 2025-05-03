@@ -1,0 +1,14 @@
+{
+  "name": "1337-cms-backend",
+  "version": "1.0.0",
+  "description": "api service for cms",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "1337+",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
