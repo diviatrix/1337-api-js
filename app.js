@@ -7,7 +7,7 @@ const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use('/api', api);
+app.use('/', api);
 
 // Start the server
 app.listen(config.port, () => {
