@@ -1,14 +1,15 @@
 import sqlite3pkg from 'sqlite3';
 import config from '../config.js';
 import messages from '../messages.js';
+import log from '../log.js'; // Import the log module
 
 const sqlite3 = sqlite3pkg.verbose();
 
 const db = new sqlite3.Database(config.databasePath, (err) => {
     if (err) {
-        console.error(messages.dbConnectionError, err.message);
+        log.error(messages.dbConnectionError, err.message);
     } else {
-        console.log(messages.dbConnectionSuccess);
+        log.log(messages.dbConnectionSuccess);
     }
 });
 
@@ -17,25 +18,25 @@ export default {
     connect: function() {
         this.db = new sqlite3.Database(config.databasePath, (err) => {
             if (err) {
-                console.error(messages.dbConnectionError, err.message);
+                log.error(err.message);
             } else {
-                console.log(messages.dbConnectionSuccess);
+                // log.log(messages.dbConnectionSuccess);
             }
         });
     },
     close: function() {
         this.db.close((err) => {
             if (err) {
-                console.error(messages.dbConnectionError, err.message);
+                log.error(err.message);
             } else {
-                console.log(messages.goodbye);
+                log.log(messages.goodbye);
             }
         });
     },
     getAll: function(tableName, callback) {
         this.db.all(`SELECT * FROM ${tableName}`, [], (err, rows) => {
             if (err) {
-                console.error(messages.errorMessage, err.message);
+                log.error(err.message);
                 callback(err, null);
             } else {
                 callback(null, rows);
@@ -45,7 +46,7 @@ export default {
     getById: function(tableName, id, callback) {
         this.db.get(`SELECT * FROM ${tableName} WHERE id = ?`, [id], (err, row) => {
             if (err) {
-                console.error(messages.errorMessage, err.message);
+                log.error(err.message);
                 callback(err, null);
             } else {
                 callback(null, row);
@@ -57,7 +58,7 @@ export default {
         const sql = `INSERT INTO ${tableName} (${Object.keys(data).join(', ')}) VALUES (${placeholders})`;
         this.db.run(sql, Object.values(data), function(err) {
             if (err) {
-                console.error(messages.errorMessage, err.message);
+                log.error(err.message);
                 callback(err, null);
             } else {
                 callback(null, { id: this.lastID });
@@ -69,7 +70,7 @@ export default {
         const sql = `UPDATE ${tableName} SET ${setClause} WHERE id = ?`;
         this.db.run(sql, [...Object.values(data), id], function(err) {
             if (err) {
-                console.error(messages.errorMessage, err.message);
+                log.error(err.message);
                 callback(err, null);
             } else {
                 callback(null, { changes: this.changes });
@@ -79,7 +80,7 @@ export default {
     remove: function(tableName, id, callback) {
         this.db.run(`DELETE FROM ${tableName} WHERE id = ?`, [id], function(err) {
             if (err) {
-                console.error(messages.errorMessage, err.message);
+                log.error(err.message);
                 callback(err, null);
             } else {
                 callback(null, { changes: this.changes });
