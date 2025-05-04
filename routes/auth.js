@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const config = require('../components/config');
 const messages = require('../components/messages');
+const db = require('../components/db'); // Import the database module
 
 // Basic GET endpoint
 router.get('/', (req, res) => {
@@ -16,11 +17,8 @@ router.get('/', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.status(200).json({
-    message: messages.api,
-    status: messages.statusMessage,
-    version: messages.apiVersion,
-    name: messages.apiName,
-    environment: config.env
+    message: messages.auth,
+    status: db ? messages.dbConnectionSuccess : messages.dbConnectionError
   });
 });
 
