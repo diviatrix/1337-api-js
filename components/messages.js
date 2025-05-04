@@ -8,6 +8,6 @@ module.exports = {
   statusMessage: 'running',
   errorMessage: 'An error occurred',
   goodbye: 'Thank you for visiting the API',
-  dbConnectionSuccess: 'DB is connected',
-  dbConnectionError: 'DB is not connected',
+  ConnectionSuccess: 'Connected',
+  ConnectionError: 'Not connected',
 };
