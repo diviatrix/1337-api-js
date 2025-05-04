@@ -11,9 +11,9 @@ const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use('/auth', auth);
 app.use('/api', api);
-app.use('/db', db);
+app.use('/api/auth', auth);
+app.use('/api/db', db);
 
 
 // Start the server
