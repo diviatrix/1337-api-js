@@ -1,4 +1,4 @@
-const colors = require('./colors'); // Import the log module
+const colors = require('./colors'); // Import the colors module
 const lh = require('./log_helper'); // Import the log helper module
 function getCallerName() {
     const err = new Error();
@@ -17,7 +17,7 @@ function getCallerName() {
 module.exports = {
     logError: function (error) {
         const caller = getCallerName();
-        console.error(this.callerString(caller) + lh.paint(`[Error]`, colors.colors.red) + error.message);
+        console.error(`${this.callerString(caller)}[Error]: ${error.message}`);
     },
     log: function (info, color) {
         const caller = getCallerName();

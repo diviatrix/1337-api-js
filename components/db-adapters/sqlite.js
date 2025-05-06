@@ -8,14 +8,31 @@ const sqlite3 = sqlite3pkg.verbose();
 
 const db = new sqlite3.Database(config.databasePath, (err) => {
     if (err) {
-        log.error(messages.dbConnectionError, err.message);
+        log.error(messages.ConnectionError, err.message);
     } 
 });
 
 module.exports = { 
     db,
     status: function() {
-        return (this.db ? messages.dbConnectionSuccess : messages.dbConnectionError);
+        const statusMessage = this.db ? messages.ConnectionSuccess : messages.ConnectionError;
+        log.log(messages.dbStatus, statusMessage, 'blue');
+        log.log(messages.dbPath, config.databasePath, 'blue');
+        const result = {
+            message: messages.dbStatus,
+            db: {
+                status: statusMessage,
+                path: config.databasePath
+            }
+        };
+        log.log('Status function returning:', JSON.stringify(result));
+        return result;
+    },
+    connection: function() {
+        if (this.db) {
+            log.log(messages.dbStatus, 'blue');
+            log.log(messages.dbPath, config.databasePath, 'blue');
+        }
     },
     close: function() {
         this.db.close((err) => {
@@ -38,6 +55,16 @@ module.exports = {
     },
     getById: function(tableName, id, callback) {
         this.db.get(`SELECT * FROM ${tableName} WHERE id = ?`, [id], (err, row) => {
+            if (err) {
+                log.error(err.message);
+                callback(err, null);
+            } else {
+                callback(null, row);
+            }
+        });
+    },
+    getByLogin: function(tableName, login, callback) {
+        this.db.get(`SELECT * FROM ${tableName} WHERE login = ?`, [login], (err, row) => {
             if (err) {
                 log.error(err.message);
                 callback(err, null);
@@ -86,7 +113,7 @@ module.exports = {
                 name: 'users',
                 schema: `CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT UNIQUE NOT NULL,
+                    login TEXT UNIQUE NOT NULL,
                     password TEXT NOT NULL,
                     email TEXT UNIQUE,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP

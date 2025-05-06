@@ -1,3 +1,5 @@
 /node_modules
 db/database.db
 components/config.js
+components/config.js
+db/database.db
