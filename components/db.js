@@ -6,7 +6,6 @@ const adapter = require(config.db_adapter); // Import the database adapter
 
 if (adapter) {
     log.log(`[DB]: ${messages.ConnectionSuccess}`, 'blue');
-    log.log(`Adapter methods: ${Object.keys(adapter).join(', ')}`); // Log as string, no color
 } else {
     log.log(messages.ConnectionError, 'red');
 }

@@ -10,6 +10,8 @@ module.exports = {
   goodbye: 'Thank you for visiting the API',
   ConnectionSuccess: 'Connected',
   ConnectionError: 'Not connected',
+  dbStatus: 'Database status',
+  dbPath: 'Database path',
   // New auth messages
   invalidInput: 'Invalid input provided',
   userExists: 'User already exists',

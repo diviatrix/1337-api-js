@@ -8,7 +8,7 @@ const sqlite3 = sqlite3pkg.verbose();
 
 const db = new sqlite3.Database(config.databasePath, (err) => {
     if (err) {
-        log.error(messages.ConnectionError, err.message);
+        log.logError(err);
     } 
 });
 
@@ -16,8 +16,8 @@ module.exports = {
     db,
     status: function() {
         const statusMessage = this.db ? messages.ConnectionSuccess : messages.ConnectionError;
-        log.log(messages.dbStatus, statusMessage, 'blue');
-        log.log(messages.dbPath, config.databasePath, 'blue');
+        log.log(`${messages.dbStatus}: ${statusMessage}`, 'blue');
+        log.log(`${messages.dbPath}: ${config.databasePath}`, 'blue');
         const result = {
             message: messages.dbStatus,
             db: {
@@ -25,19 +25,19 @@ module.exports = {
                 path: config.databasePath
             }
         };
-        log.log('Status function returning:', JSON.stringify(result));
+        log.log(`Status function returning: ${JSON.stringify(result)}`);
         return result;
     },
     connection: function() {
         if (this.db) {
             log.log(messages.dbStatus, 'blue');
-            log.log(messages.dbPath, config.databasePath, 'blue');
+            log.log(`${messages.dbPath}: ${config.databasePath}`, 'blue');
         }
     },
     close: function() {
         this.db.close((err) => {
             if (err) {
-                log.error(lh.paint(err.message), 'red');
+                log.logError(err);
             } else {
                 log.log(messages.goodbye);
             }
@@ -46,7 +46,7 @@ module.exports = {
     getAll: function(tableName, callback) {
         this.db.all(`SELECT * FROM ${tableName}`, [], (err, rows) => {
             if (err) {
-                log.error(err.message);
+                log.logError(err);
                 callback(err, null);
             } else {
                 callback(null, rows);
@@ -56,7 +56,7 @@ module.exports = {
     getById: function(tableName, id, callback) {
         this.db.get(`SELECT * FROM ${tableName} WHERE id = ?`, [id], (err, row) => {
             if (err) {
-                log.error(err.message);
+                log.logError(err);
                 callback(err, null);
             } else {
                 callback(null, row);
@@ -66,7 +66,7 @@ module.exports = {
     getByLogin: function(tableName, login, callback) {
         this.db.get(`SELECT * FROM ${tableName} WHERE login = ?`, [login], (err, row) => {
             if (err) {
-                log.error(err.message);
+                log.logError(err);
                 callback(err, null);
             } else {
                 callback(null, row);
@@ -78,7 +78,7 @@ module.exports = {
         const sql = `INSERT INTO ${tableName} (${Object.keys(data).join(', ')}) VALUES (${placeholders})`;
         this.db.run(sql, Object.values(data), function(err) {
             if (err) {
-                log.error(err.message);
+                log.logError(err);
                 callback(err, null);
             } else {
                 callback(null, { id: this.lastID });
@@ -90,7 +90,7 @@ module.exports = {
         const sql = `UPDATE ${tableName} SET ${setClause} WHERE id = ?`;
         this.db.run(sql, [...Object.values(data), id], function(err) {
             if (err) {
-                log.error(err.message);
+                log.logError(err);
                 callback(err, null);
             } else {
                 callback(null, { changes: this.changes });
@@ -100,7 +100,7 @@ module.exports = {
     remove: function(tableName, id, callback) {
         this.db.run(`DELETE FROM ${tableName} WHERE id = ?`, [id], function(err) {
             if (err) {
-                log.error(err.message);
+                log.logError(err);
                 callback(err, null);
             } else {
                 callback(null, { changes: this.changes });
@@ -209,7 +209,7 @@ module.exports = {
             this.db.run(table.schema, err => {
                 if (err && !hasError) {
                     hasError = true;
-                    log.error(`Error creating table ${table.name}: ${err.message}`);
+                    log.logError(err);
                     if (callback) callback(err);
                 }
                 completed++;
