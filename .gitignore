@@ -3,4 +3,5 @@ db/database.db
 components/config.js
 components/config.js
 db/database.db
+db/database.db
 *.db
