@@ -2,8 +2,7 @@ const sqlite3pkg = require('sqlite3');
 const config = require('../config.js');
 const messages = require('../messages.js');
 const log = require('../log.js'); // Import the log module
-const lh = require('../log_helper.js'); // Import the log helper module
-
+const tables = require('./sqlite-tables.js'); // Import the tables module
 const sqlite3 = sqlite3pkg.verbose();
 
 const db = new sqlite3.Database(config.databasePath, (err) => {
@@ -108,104 +107,11 @@ module.exports = {
         });
     },
     init: function(callback) {
-        const tables = [
-            {
-                name: 'users',
-                schema: `CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    login TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL,
-                    email TEXT UNIQUE,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                )`
-            },
-            {
-                name: 'session',
-                schema: `CREATE TABLE IF NOT EXISTS session (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    token TEXT UNIQUE NOT NULL,
-                    expires_at DATETIME,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                )`
-            },
-            {
-                name: 'records',
-                schema: `CREATE TABLE IF NOT EXISTS records (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    data TEXT,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                )`
-            },
-            {
-                name: 'uploads',
-                schema: `CREATE TABLE IF NOT EXISTS uploads (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    filename TEXT,
-                    path TEXT,
-                    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                )`
-            },
-            {
-                name: 'account',
-                schema: `CREATE TABLE IF NOT EXISTS account (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    balance REAL DEFAULT 0,
-                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                )`
-            },
-            {
-                name: 'comments',
-                schema: `CREATE TABLE IF NOT EXISTS comments (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    record_id INTEGER,
-                    comment TEXT,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY(user_id) REFERENCES users(id),
-                    FOREIGN KEY(record_id) REFERENCES records(id)
-                )`
-            },
-            {
-                name: 'groups',
-                schema: `CREATE TABLE IF NOT EXISTS groups (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT UNIQUE NOT NULL,
-                    description TEXT
-                )`
-            },
-            {
-                name: 'settings',
-                schema: `CREATE TABLE IF NOT EXISTS settings (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    key TEXT,
-                    value TEXT,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                )`
-            },
-            {
-                name: 'bonus',
-                schema: `CREATE TABLE IF NOT EXISTS bonus (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    used BOOLEAN DEFAULT FALSE,
-                    amount REAL,
-                    granted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                )`
-            }
-        ];
+        log.log('Initializing database tables...');        
 
         let completed = 0;
         let hasError = false;
-        tables.forEach(table => {
+        tables.tables.forEach(table => {
             this.db.run(table.schema, err => {
                 if (err && !hasError) {
                     hasError = true;
@@ -213,7 +119,7 @@ module.exports = {
                     if (callback) callback(err);
                 }
                 completed++;
-                if (completed === tables.length && !hasError) {
+                if (completed === tables.tables.length && !hasError) {
                     if (callback) callback(null, 'All tables checked/created.');
                 }
             });
