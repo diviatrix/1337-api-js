@@ -24,9 +24,24 @@ const tables = [
         schema: `CREATE TABLE IF NOT EXISTS records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
-            data TEXT,
+            title TEXT,
+            content TEXT,
+            category TEXT,
+            tags TEXT,
+            thumbnail_url TEXT,
+            published BOOLEAN DEFAULT FALSE,
+            published_at DATETIME,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(user_id) REFERENCES users(id)
+        )`
+    },
+    {
+        name: 'tags',
+        schema: `CREATE TABLE IF NOT EXISTS tags (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            type TEXT,
+            name TEXT UNIQUE NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`
     },
     {
@@ -46,7 +61,11 @@ const tables = [
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER,
             group_id INTEGER,
-            balance REAL DEFAULT 0,
+            nickname TEXT,
+            avatar_url TEXT,
+            bio TEXT,
+            telegram TEXT,
+            discord TEXT,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(user_id) REFERENCES users(id),
             FOREIGN KEY(group_id) REFERENCES groups(id)
@@ -69,6 +88,9 @@ const tables = [
         schema: `CREATE TABLE IF NOT EXISTS groups (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT UNIQUE NOT NULL,
+            parent_id INTEGER, 
+            level INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             description TEXT
         )`
     },
@@ -90,6 +112,15 @@ const tables = [
             used BOOLEAN DEFAULT FALSE,
             amount REAL,
             granted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )`
+    },
+    {
+        name: 'bank',
+        schema: `CREATE TABLE IF NOT EXISTS bank (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            balance REAL DEFAULT 0,
             FOREIGN KEY(user_id) REFERENCES users(id)
         )`
     }
